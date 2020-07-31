@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="../js/common.js"></script>
+    <script src="../js/ajax.js"></script>
+    <script src="../js/editUser.js"></script>
+    <style>
+        label {
+            display: inline-block;
+            width: 80px;
+            text-align: right;
+        }
+
+        form {
+            position: absolute;
+            right: 200px;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: #f1f1f1;
+            padding: 50px;
+            border-radius: 10px;
+        }
+
+        form>div>input[type=text] {
+            width: 250px;
+            height: 25px;
+            border: 1px solid gray;
+            border-radius: 3px;
+            text-indent: 3px;
+        }
+
+        div span {
+            display: block;
+            margin-left: 80px;
+            font-size: 12px;
+            height: 18px;
+            padding-left: 5px;
+            white-space: nowrap;
+        }
+
+        div .randCode {
+            display: inline-block;
+            margin-left: 0;
+        }
+
+        form>div:nth-last-child(1) {
+            text-align: center;
+        }
+
+        form>div:nth-last-child(1)>button {
+            margin-right: 30px;
+        }
+
+
+        .right {
+            color: green;
+        }
+
+        .err {
+            color: red;
+        }
+    </style>
+</head>
+
+<body>
+    <form action="" onsubmit="return false" autocomplete="off">
+        <div>
+            <label for="user">用户名</label>
+            <input id="user" type="text">
+            <span class="user_span"></span>
+        </div>
+        <div>
+            <label for="pwd">密码:</label>
+            <input id="pwd" type="text">
+            <span class="pwd_span"></span>
+        </div>
+
+        <div>
+            <label for="phone">手机号:</label>
+            <input id="phone" type="text">
+            <span class="phone_span"></span>
+        </div>
+        <div>
+            <label for="email">邮箱:</label>
+            <input id="email" type="text">
+            <span class="email_span"></span>
+        </div>
+
+        <div>
+            <button id="regBtn">修改</button>
+            <input type="reset">
+        </div>
+    </form>
+</body>
+<script>
+    // 用户名  由数字,大小写字母,下划线,$ 组成  6-12位 且不能以数字开头
+    // 密码    由数字,大小写字母,下划线 组成  6-12位 判断强中弱
+    // 确认密码 
+    // 手机号  1开头 11位
+    // 邮箱    1272071492@qq.com
+
+
+    var form = document.getElementsByTagName("form")[0];
+    var pwdInp = document.getElementById("pwd");
+    var randCode = document.getElementsByClassName("randCode")[0];
+    var regBtn = document.getElementById("regBtn");
+
+
+    var userInp = document.getElementById("user");
+    var userSpan = document.getElementsByClassName("user_span")[0];
+
+    var pwdInp = document.getElementById("pwd");
+    var pwdSpan = document.getElementsByClassName("pwd_span")[0];
+
+    var phoneInp = document.getElementById("phone");
+    var phoneSpan = document.getElementsByClassName("phone_span")[0];
+
+    var emailInp = document.getElementById("email");
+    var emailSpan = document.getElementsByClassName("email_span")[0];
+
+    var search = location.search;
+    if (search) {  //存在数据(说明从主页index.html跳转至编辑页面)  获取对应的u-id
+        var u_id = search.split("=")[1];
+    } else {  // 否则说明通过其他途径跳转过来(手动输入页面等)  直接跳转至index页面
+        location.href = "./index1.html";
+    }
+
+    $.ajax({
+        url: "../php/searchUserById.php",
+        data: {
+            u_id
+        },
+        dataType: "json",
+        success(data) {
+            console.log(data);
+            var { user, pwd, phone, email } = data;
+            userInp.value = user;
+            pwdInp.value = pwd;
+            phoneInp.value = phone;
+            emailInp.value = email;
+        }
+    })
+
+
+    // var a = b = 10
+    form.onchange = form.oninput = function (e) {
+        var e = e || window.event;
+        var target = e.target || e.srcElement;
+        console.log(target);
+        if (target.id == "user") {
+            var user = target.value;
+            var tipsSpan = next(target);
+            // 用户
+            judgeUserHandler(user, u_id).then(res => {
+                tipsSpan.className = res.status ? "right" : "err";
+                tipsSpan.textContent = res.msg;
+            }).catch(res => {
+                tipsSpan.className = res.status ? "right" : "err";
+                tipsSpan.textContent = res.msg;
+            })
+
+            // judge("judgeUserHandler", user, u_id, tipsSpan)
+
+        } else if (target.id == "pwd") {
+            var pwd = target.value;
+            var tipsSpan = next(target);
+            // 用户
+            judgePwdHandler(pwd).then(res => {
+                tipsSpan.className = res.status ? "right" : "err";
+                tipsSpan.textContent = "密码等级" + res.pwdLevel;
+            }).catch(res => {
+                tipsSpan.className = res.status ? "right" : "err";
+                tipsSpan.textContent = res.msg;
+            })
+
+            // judge("judgePwdHandler", pwd, u_id, tipsSpan)
+        } else if (target.id == "phone") {
+            var phone = target.value;
+            var tipsSpan = next(target);
+
+            // 用户
+            var p = judgePhoneHandler(phone, u_id).then(res => {
+                tipsSpan.className = res.status ? "right" : "err";
+                tipsSpan.textContent = res.msg;
+            }).catch(res => {
+                tipsSpan.className = res.status ? "right" : "err";
+                tipsSpan.textContent = res.msg;
+            })
+            console.log(p);
+
+            // judge("judgePhoneHandler", phone, u_id, tipsSpan)
+        } else if (target.id == "email") {
+            var email = target.value;
+            var tipsSpan = next(target);
+
+            // 用户
+            judgeEmailHandler(email, u_id).then(res => {
+                tipsSpan.className = res.status ? "right" : "err";
+                tipsSpan.textContent = res.msg;
+            }).catch(res => {
+                tipsSpan.className = res.status ? "right" : "err";
+                tipsSpan.textContent = res.msg;
+            });
+
+            // judge("judgeEmailHandler", email, u_id, tipsSpan)
+        }
+    }
+
+    function judge(handerFn, str, u_id, tipsSpan) {
+        window[handerFn](str, u_id).then(res => {
+            tipsSpan.className = res.status ? "right" : "err";
+            tipsSpan.textContent = res.msg;
+        }).catch(res => {
+            tipsSpan.className = res.status ? "right" : "err";
+            tipsSpan.textContent = res.msg;
+        });
+    }
+
+
+
+    // 单用户  
+    // var count = 0;
+
+    // 取消连点(函数防抖)
+    var isEditFlag = false;// 是否正在修改
+
+    regBtn.onclick = function () {
+
+        if (isEditFlag) {
+            console.log("阻止")
+            return false;
+        }
+        isEditFlag = true;
+
+        // 提交时等所有内容验证通过之后才可以
+        var user = userInp.value;
+        var pwd = pwdInp.value;
+        var phone = phoneInp.value;
+        var email = emailInp.value;
+
+        // 问题1. 
+        // isUserRight, isPwdRight, isPhoneRight, isEmailRight  全变成了 false
+        // 异步请求导致的
+
+        // 问题2. 判断用户名是否存在时  (自己的也报错了  自己的名字坑定存在于数据库)
+        // 排除自己之后判断用户名是否存在
+
+
+        // 得到四个Promise的实例  必须等到全部为{ status: true }
+        // judgeUserHandler(user, u_id);
+        // judgeUserHandler(pwd, u_id);
+        // judgeUserHandler(phone, u_id);
+        // judgeUserHandler(email, u_id);
+
+        var list = [judgeUserHandler(user, u_id), judgePwdHandler(pwd, u_id), judgePhoneHandler(phone, u_id), judgeEmailHandler(email, u_id)];
+
+        Promise.all(list).then(res => {
+            console.log("准备修改");
+
+            $.ajax({
+                type: "get",
+                url: "../php/editUserById.php",
+                data: {
+                    u_id,
+                    user,
+                    pwd,
+                    phone,
+                    email
+                },
+                dataType: "json",
+                success(result) {
+                    isEditFlag = false;
+                    console.log(result);
+                    if (result.status) {
+                        if (confirm("修改成功,是否重新登录?")) {
+                            location.href = "./login.html";
+                        }
+                    }
+
+                }
+            })
+
+
+
+        }).catch(err => {
+            console.log(err);
+            alert(err.msg);
+            isEditFlag = false;
+        })
+
+
+    }
+
+
+
+    function prev(ele) {
+        return ele.previousElementSibling || ele.previousSibling;
+    }
+
+
+    function next(ele) {
+        return ele.nextElementSibling || ele.nextSibling;
+    }
+
+    function getCode() {
+        var str = "1234567890qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM";
+        var newStr = "";
+        for (var i = 0; i < 4; i++) {
+            var index = Math.floor(Math.random() * str.length);
+            newStr += str.charAt(index);
+        }
+        return newStr;
+    }
+
+
+
+
+
+</script>
+
+</html>

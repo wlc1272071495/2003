@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>原生JS实现购物车结算功能代码</title>
+    <link rel="stylesheet" href="../css/style.css" />
+    <script src="../js/common.js"></script>
+    <script src="../js/jquery-3.1.1.min.js"></script>
+</head>
+
+<body>
+    <div class="catbox">
+        <table id="cartTable">
+            <thead>
+                <tr>
+                    <th><label>
+                            <input class="check-all check" type="checkbox" />&nbsp;&nbsp;全选</label></th>
+                    <th>商品</th>
+                    <th>单价</th>
+                    <th>数量</th>
+                    <th>小计</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- <tr>
+                    <td class="checkbox"><input class="check-one check" type="checkbox" /></td>
+                    <td class="goods"><img src="../images/1.jpg" alt="" /><span>Casio/卡西欧 EX-TR350</span></td>
+                    <td class="price">5999.88</td>
+                    <td class="count"><span class="reduce"></span>
+                        <input class="count-input" type="text" value="1" />
+                        <span class="add">+</span></td>
+                    <td class="subtotal">5999.88</td>
+                    <td class="operation"><span class="delete">删除</span></td>
+                </tr>
+                <tr>
+                    <td class="checkbox"><input class="check-one check" type="checkbox" /></td>
+                    <td class="goods"><img src="../images/2.jpg" alt="" /><span>Canon/佳能 PowerShot SX50 HS</span></td>
+                    <td class="price">3888.50</td>
+                    <td class="count"><span class="reduce"></span>
+                        <input class="count-input" type="text" value="1" />
+                        <span class="add">+</span></td>
+                    <td class="subtotal">3888.50</td>
+                    <td class="operation"><span class="delete">删除</span></td>
+                </tr>
+                <tr>
+                    <td class="checkbox"><input class="check-one check" type="checkbox" /></td>
+                    <td class="goods"><img src="../images/3.jpg" alt="" /><span>Sony/索尼 DSC-WX300</span></td>
+                    <td class="price">1428.50</td>
+                    <td class="count"><span class="reduce"></span>
+                        <input class="count-input" type="text" value="1" />
+                        <span class="add">+</span></td>
+                    <td class="subtotal">1428.50</td>
+                    <td class="operation"><span class="delete">删除</span></td>
+                </tr>
+                <tr>
+                    <td class="checkbox"><input class="check-one check" type="checkbox" /></td>
+                    <td class="goods"><img src="../images/4.jpg" alt="" /><span>Fujifilm/富士 instax mini 25</span></td>
+                    <td class="price">640.60</td>
+                    <td class="count"><span class="reduce"></span>
+                        <input class="count-input" type="text" value="1" />
+                        <span class="add">+</span></td>
+                    <td class="subtotal">640.60</td>
+                    <td class="operation"><span class="delete">删除</span></td>
+                </tr> -->
+            </tbody>
+        </table>
+        <div class="foot" id="foot">
+
+            <a class="fl" id="deleteAll" href="javascript:;">删除</a>
+            <div class="fr closing">结 算</div>
+            <input type="hidden" id="cartTotalPrice" />
+            <div class="fr total">合计：￥<span id="priceTotal">0.00</span></div>
+            <div class="fr selected" id="selected">已选商品<span id="selectedTotal">0</span>件<span
+                    class="arrow up">︽</span><span class="arrow down">︾</span></div>
+            <div class="selected-view">
+                <div id="selectedViewList" class="clearfix">
+                    <div><img src="../images/1.jpg"><span>取消选择</span></div>
+                </div>
+                <span class="arrow">◆<span>◆</span></span>
+            </div>
+        </div>
+    </div>
+
+
+
+</body>
+
+<script>
+    var user = getCookie("logUser");
+    if (!user) {
+        var url = location.href; // 获取当前地址
+        location.href = "./login.html?ReturnUrl=" + encodeURIComponent(url);
+    }
+
+    getShopGoodsByUser(user).then(data => {
+        console.log(data);
+        var html = "";
+        data.forEach(function ({ id, goodsName, goodsImg, goodsPrice, buyNum }) {
+            // var goodsName = item.goodsName;
+            // var goodsImg = item.goodsImg;
+            // var goodsPrice = item.goodsPrice;
+            // var buyNum = item.buyNum;
+            html += `<tr>
+                    <td class="checkbox"><input goodsId="${id}" class="check-one check" type="checkbox" /></td>
+                    <td class="goods"><img src="${goodsImg.replace("n5", "n1")}" alt="" /><span>${goodsName}</span></td>
+                    <td class="price">${goodsPrice}</td>
+                    <td class="count"><span class="reduce">${buyNum == 1 ? "" : "-"}</span>
+                        <input class="count-input" type="text" value="${buyNum}" />
+                        <span class="add">+</span></td>
+                    <td class="subtotal">${(buyNum * goodsPrice).toFixed(2)}</td>
+                    <td class="operation"><span class="delete"  goodsId="${id}">删除</span></td>
+                </tr>`;
+        })
+        // 动态生成 (保证元素显示到页面之后  才能获取元素绑定事件) 
+        $("table tbody").html(html);
+    })
+
+    // 
+    // $(".check-one:checked").map(function(){return ($(this).attr("goodsId"))}).get()
+
+    function getShopGoodsByUser(user) {
+        return new Promise(function (resolve, reject) {
+            $.ajax({
+                url: "../php/searchShopCarByUser.php",
+                data: {
+                    user
+                },
+                dataType: "json",
+                success(data) {
+                    resolve(data);
+                },
+                error(err) {
+                    console.log(err);
+                    reject(err);
+                }
+            })
+
+
+        })
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    function prev(ele) {
+        return ele.previousElementSibling || ele.previousSibling;
+    }
+    function next(ele) {
+        return ele.nextElementSibling || ele.nextSibling;
+    }
+
+
+</script>
+
+</html>

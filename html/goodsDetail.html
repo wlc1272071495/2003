@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="../js/jquery-3.1.1.min.js"></script>
+    <script src="../js/common.js"></script>
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+        }
+
+        .wrapAll {
+            overflow: hidden;
+            margin: 0 auto;
+            margin-top: 100px;
+            width: 1140px;
+        }
+
+        .wrapBox {
+            width: 400px;
+            height: 400px;
+            background-color: grey;
+            position: relative;
+            float: left;
+            border: 1px dashed #000;
+        }
+
+        .shadow {
+            width: 150px;
+            height: 150px;
+            background-color: rgba(0, 0, 0, 0.5);
+            position: absolute;
+            left: 0px;
+            top: 0px;
+            display: none;
+        }
+
+        .wrapBox img {
+            width: 100%;
+            height: 100%;
+        }
+
+        .wrapImgBox {
+            width: 300px;
+            height: 300px;
+            /* background-color: rgba(125, 255, 255, 0.4); */
+            float: left;
+            position: relative;
+            overflow: hidden;
+            display: none;
+
+        }
+
+        .wrapImgBox img {
+            width: 800px;
+            height: 800px;
+            position: absolute;
+            left: 0;
+            top: 0;
+            z-index: -1;
+        }
+
+        .detailBox {
+            overflow: hidden;
+            background-color: pink;
+            height: 400px;
+        }
+
+        .detail {
+            margin-left: 100px;
+        }
+
+        .detail>* {
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="box">
+        你好,<a href="./login.html">请登录</a>
+    </div>
+    <div class="wrapAll">
+        <div class="wrapBox">
+            <div class="shadow"></div>
+            <img src="../images/menma.jpg" alt="" class="smallImg">
+        </div>
+        <!-- <div class="wrapImgBox">
+            <img src="../images/menma.jpg" alt="" class="bigImg">
+        </div> -->
+        <div class="detailBox">
+            <div class="detail">
+                <h3 class="goodsName">
+                    柒牌 SEVEN 短袖POLO衫2020年夏季休闲男士纯色高山棉弹力轻薄透气翻领T恤118T70480 藏青175
+                </h3>
+                <div class="goodsPrice">
+                    秒 杀 价:￥99.00
+                </div>
+                <div class="goodsNumBox">
+                    <span>-</span>
+                    <input type="number" min="1" max="100">
+                    <span>+</span>
+                </div>
+                <div class="addCarBox">
+                    <button class="addToCar">加入购物车</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+<script>
+    var search = location.search;
+    if (search) {
+        var gid = search.split("=")[1];
+    } else {
+        location.href = "./index1.html";
+    }
+
+    if (getCookie("logUser")) {
+        box.textContent = `欢迎您,${getCookie("logUser")}`;
+    }
+
+    console.log(gid);
+
+    searchGoods(gid).then(data => {
+        console.log(data);
+        var { goodsId, goodsName, goodsImg, goodsImgList, goodsPrice } = data;
+
+        var detailHtml = `<h3 class="goodsName">
+                   ${goodsName}
+                </h3>
+                <div class="goodsPrice">
+                    秒 杀 价:￥ ${goodsPrice}
+                </div>
+                <div class="goodsNumBox">
+                    <span>-</span>
+                    <input class="buyNum" value="1" type="number" min="1" max="100">
+                    <span>+</span>
+                </div>
+                <div class="addCarBox">
+                    <button class="addToCar">加入购物车</button>
+                </div>`;
+
+        $(".detailBox .detail").html(detailHtml);
+        $(".wrapBox img").attr("src", goodsImg.replace("n5", "n1"));
+
+
+
+    }).catch(err => {
+        console.log(err);
+    })
+
+    // 点击事件的相关处理
+    $(document).on("click", ".addToCar", { gid }, function () {
+
+        // 判断是否登录
+        var user = getCookie("logUser");// 获取当前登录的用户
+        if (user) {//登录则 加入购物车
+
+            // 存到数据库中(建表)
+            // 谁? 买了什么东西?(商品id)  买了几件? 
+            // 谁 登录用户
+            // 买了什么东西?   当前商品 (商品id)
+            // 买了几件?  buyNum
+
+            var buyNum = $(".buyNum").val();
+            addToCar(user, gid, buyNum).then(data => {
+                if (confirm("加入成功,是否进入购物车?")) {
+                    location.href = "./shoppingCar.html";
+                }
+            }).catch(err => {
+                alert(err.msg);
+            })
+
+
+
+        } else {
+
+            if (confirm("您还没有登录,请登录")) {
+                var url = location.href; // 获取当前地址
+                location.href = "./login.html?ReturnUrl=" + encodeURIComponent(url);
+            }
+        }
+
+
+    })
+
+
+
+
+    function addToCar(user, goodsId, buyNum) {
+        return new Promise(function (resolve, reject) {
+            $.ajax({
+                type: "post",
+                url: "../php/addToCar.php",
+                data: {
+                    user,
+                    goodsId,
+                    buyNum,
+                },
+                dataType: "json",
+                success(data) {
+                    if (data.status) {
+                        resolve(data);
+                    } else {
+                        reject(err);
+                    }
+                }
+            })
+        })
+    }
+
+
+
+    function searchGoods(gid) {
+        return new Promise(function (resolve, reject) {
+            $.ajax({
+                url: "../php/searchGoodsById.php",
+                data: {
+                    gid,
+                },
+                dataType: "json",
+                success(data) {
+                    resolve(data);
+                },
+                error(err) {
+                    reject(err);
+                }
+            })
+        })
+    }
+
+
+</script>
+
+</html>

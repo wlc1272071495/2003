@@ -1,0 +1,42 @@
+* {
+    padding: 0;
+    margin: 0;
+}
+
+li {
+    list-style: none;
+}
+
+.page {
+    line-height: 36px;
+    text-align: center;
+    overflow: hidden;
+    color: #38f;
+    padding: 5px;
+    user-select: none;
+}
+
+.page .prev,
+.page .pageBox,
+.page .next {
+    float: left;
+}
+
+.page .prev,
+.page .next {
+    width: 88px;
+    border: 1px solid #e1e2e3;
+}
+
+.page .pageBox li {
+    width: 36px;
+    border: 1px solid #e1e2e3;
+    float: left;
+    margin: 0 5px;
+}
+
+.page .pageBox .active {
+    color: #333;
+    border-color: transparent;
+    background-color: #e1e2e3;
+}

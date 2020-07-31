@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="../js/ajax.js"></script>
+</head>
+
+<body>
+    <select name="" id="province">
+        <!-- <option value="">请选择省份</option> -->
+        <!-- <option value="">北京</option>
+        <option value="">上海</option>
+        <option value="">湖北</option>
+        <option value="">湖南</option> -->
+    </select>
+    <select name="" id="city">
+        <option value="">请选择市</option>
+        <!-- <option value="">朝阳</option>
+        <option value="">海淀</option>
+        <option value="">上地</option>
+        <option value="">沙河</option> -->
+    </select>
+</body>
+<script>
+    var provinceSel = document.getElementById("province");
+    var citySel = document.getElementById("city");
+
+    $.ajax({
+        type: "get",
+        url: "../data/data.json",
+        dataType: "json",
+        success(data) {
+            console.log(data);
+            var { list } = data;
+
+            var pro_html = `<option value="">请选择省份</option>`;
+            list.forEach((item) => {
+                var { city_id, city_name } = item;
+                pro_html += `<option value="${city_id}">${city_name}</option>`;
+            })
+            // list.forEach(({ city_id, city_name }) => {
+            //     pro_html += `<option value="">${city_name}</option>`;
+            // })
+            provinceSel.innerHTML = pro_html;
+
+            provinceSel.onchange = function () {
+                var city_id = this.value;
+                console.log(this.value);
+                if (city_id) {
+                    // var thisProvince = list.filter(function (item) {
+                    //     return item.city_id == city_id;
+                    // })[0];
+                    var thisProvince = list.filter(item => item.city_id == city_id)[0];
+                    console.log(thisProvince);
+
+                    // var cityList = thisProvince.list
+
+                    var { list: cityList } = thisProvince;
+
+                    var city_html = `<option value="">请选择市/区</option>`;
+                    cityList.forEach((item) => {
+                        var { city_id, city_name } = item;
+                        city_html += `<option value="${city_id}">${city_name}</option>`;
+                    })
+
+                    citySel.innerHTML = city_html;
+
+                } else {
+                    citySel.innerHTML = `<option value="">请选择市/区</option>`;
+                }
+            }
+
+        }
+    })
+
+
+</script>
+
+</html>

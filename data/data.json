@@ -1,0 +1,93 @@
+{
+    "country": "China",
+    "list": [
+        {
+            "city_id": "A001",
+            "city_name": "北京",
+            "list": [
+                {
+                    "city_id": "A00101",
+                    "city_name": "朝阳"
+                },
+                {
+                    "city_id": "A00102",
+                    "city_name": "海淀"
+                },
+                {
+                    "city_id": "A00103",
+                    "city_name": "上地"
+                },
+                {
+                    "city_id": "A00104",
+                    "city_name": "沙河"
+                }
+            ]
+        },
+        {
+            "city_id": "A002",
+            "city_name": "上海",
+            "list": [
+                {
+                    "city_id": "A00201",
+                    "city_name": "徐汇"
+                },
+                {
+                    "city_id": "A00202",
+                    "city_name": "静安"
+                },
+                {
+                    "city_id": "A00203",
+                    "city_name": "蓬莱"
+                },
+                {
+                    "city_id": "A00204",
+                    "city_name": "普陀"
+                }
+            ]
+        },
+        {
+            "city_id": "A003",
+            "city_name": "湖北",
+            "list": [
+                {
+                    "city_id": "A00301",
+                    "city_name": "武汉"
+                },
+                {
+                    "city_id": "A00302",
+                    "city_name": "孝感"
+                },
+                {
+                    "city_id": "A00303",
+                    "city_name": "襄阳"
+                },
+                {
+                    "city_id": "A00304",
+                    "city_name": "天门"
+                }
+            ]
+        },
+        {
+            "city_id": "A004",
+            "city_name": "湖南",
+            "list": [
+                {
+                    "city_id": "A00401",
+                    "city_name": "长沙"
+                },
+                {
+                    "city_id": "A00402",
+                    "city_name": "岳阳"
+                },
+                {
+                    "city_id": "A00403",
+                    "city_name": "常德"
+                },
+                {
+                    "city_id": "A00404",
+                    "city_name": "株洲"
+                }
+            ]
+        }
+    ]
+}

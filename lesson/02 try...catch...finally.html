@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="../js/ajax.js"></script>
+</head>
+
+<body>
+
+</body>
+<script>
+    // 异常捕获的一种方法
+    // var a = 100;
+
+    // var c = a + b;
+    // console.log(c);
+    // document.write("a123123");
+
+
+    // 捕获错误  不影响全局代码执行
+    // try {
+
+    //     var a = 100;
+    //     var c = a + b;
+    //     console.log(c);
+
+    // } catch (err) {
+    //     console.log(err);
+    // } finally {
+    //     document.write("a123123");
+    // }
+
+
+    // 执行的代码出错之后  有一个补救措施  (常见  兼容)
+    try {
+        document.addEventListener("click", function () {
+            alert(1111);
+        })
+    } catch (err) {
+        document.attachEvent("onclick", function () {
+            alert(1111);
+        })
+    }
+
+    // try {
+    //     document.addEventListener("click", function () {
+    //         alert(1111);
+    //     })
+    // } catch (err) {
+    //     document.attachEvent("onclick", function () {
+    //         alert(1111);
+    //     })
+    // } finally {
+
+    // }
+
+
+    var p = new Promise(function (resolve, reject) {
+        $.ajax_1({
+            url: "../php/isExistUser.php",
+            data: {
+                user: "a123123",
+                u_id: 1
+            },
+            dataType: "json",
+            success: function (result) {
+                console.log(result);
+                if (result.status) {
+                    resolve(result);
+                } else {
+                    reject(result);
+                }
+            },
+            error: function (err) {
+                console.log(err);
+            }
+        })
+    });
+
+
+</script>
+
+</html>

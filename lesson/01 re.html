@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="../js//ajax.js"></script>
+</head>
+
+<body>
+
+</body>
+<script>
+    // Promise
+
+    // 传统的异步编程的解决方式  都是依赖于 回调函数
+
+    // Promise   配合  async  
+
+    // Promise 的状态
+    // pending 状态(进行中)
+    // fulfilled  (resolved)  已完成
+    // rejected  已失败
+
+    // var p = new Promise(function (resolve, reject) {
+    //     $.ajax({
+    //         url: "../php/isExistUser.php",
+    //         data: {
+    //             user: "a123123",
+    //             u_id: 1
+    //         },
+    //         dataType: "json",
+    //         success: function (result) {
+    //             console.log(result);
+    //             if (result.status) {
+    //                 resolve(result);
+    //             } else {
+    //                 reject(result);
+    //             }
+    //         }
+    //     })
+    // });
+
+
+    // p.then(res => {
+    //     document.write(res.msg);
+    // }, res => {
+    //     document.write(res.msg);
+    // })
+
+    // p.then(res => {
+    //     document.write(res.msg);
+    // }).catch(res => {
+    //     document.write(res.msg);
+    // })
+
+
+
+    function isExist(user, u_id) {
+        return new Promise(function (resolve, reject) {
+            var data = { // 默认的data对象
+                user,
+            }
+
+            if (u_id) {  // 如果传入的u_id就拼接到data中
+                data.u_id = u_id;
+            }
+
+            $.ajax({
+                url: "../php/isExistUser.php",
+                data: data,
+                dataType: "json",
+                success: function (result) {
+                    // console.log(result);
+                    if (result.status) {
+                        resolve(result);
+                    } else {
+                        reject(result);
+                    }
+                }
+            })
+        });
+
+    }
+
+    // isExist("a123123").then(res => {
+    //     console.log(res);
+    // }).catch(res => {
+    //     console.log(res);
+    // })
+
+    // isExistUser("b123123123").then(res => {
+    //     console.log(res);
+    //     return isExistPhone("a123123123");
+    // }).then(res => {
+    //     console.log(res);
+    //     return isExistEmail("a123123123");
+    // }).then(res => {
+    //     console.log(res);
+
+    // }).catch(res => {
+    //     console.log(res);
+    // })
+
+    // Promise.all([p1, p2, p3]);
+    // Promise.race([p1, p2, p3]);
+    // Promise.allsettled([p1, p2, p3]);
+
+    // {status:"fulfilled",value,}
+    // {status:"rejected",reason,}
+
+
+
+
+
+</script>
+
+</html>

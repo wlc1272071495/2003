@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="../js/ajax.js"></script>
+</head>
+
+<body>
+    <button class="list">a123123</button>
+    <button class="list">b123123</button>
+    <button class="list">b1231223123</button>
+</body>
+<script>
+
+    // Promise  和 async 函数  
+
+
+    // function concatData() {
+    //     return new Promise(function (resolve, reject) {
+    //         var str = "";
+    //         return readTxt("../data/1.txt").then(function (text) {
+    //             str += text;
+    //             return readTxt("../data/2.txt");  // 将函数的返回值(普通数值 也可以是 Promise实例 ) 处理之后返回新的promise实例
+    //         }).then(function (text) {
+    //             console.log(text);
+    //             str += text;
+    //             return readTxt("../data/3.txt");
+    //         }).then(function (text) {
+    //             console.log(text);
+    //             str += text;
+    //             // document.write(str);
+    //             resolve(text);
+    //             // return str;
+    //         }).catch(function (err) {
+    //             console.log(err);
+    //             reject(err);
+    //             // return err;
+    //         })
+    //     })
+
+    // }
+
+
+    // 创建一个新的函数  把拼接的字符串 返回出去
+    // function concatData() {
+    //     var str = "";
+    //     return readTxt("../data/1.txt").then(function (text) {
+    //         str += text;
+    //         return readTxt("../data/2.txt");  // 将函数的返回值(普通数值 也可以是 Promise实例 ) 处理之后返回新的promise实例
+    //     }).then(function (text) {
+    //         console.log(text);
+    //         str += text;
+    //         return readTxt("../data/3.txt");
+    //     }).then(function (text) {
+    //         console.log(text);
+    //         str += text;
+    //         // document.write(str);
+    //         return str;
+    //     }).catch(function (err) {
+    //         console.log(err);
+    //         return err;
+    //     })
+    // }
+
+    // var result = concatData();
+    // console.log(result);
+
+
+    // async function concatData() {
+    //     // document.write(b);
+    //     var str = "";
+    //     var text1 = await readTxt("../data/1.txt");  //等待异步操作执行结束并得到结果
+    //     var text2 = await readTxt("../data/2.txt");
+    //     var text3 = await readTxt("../data/3.txt");
+    //     // console.log(text1);
+    //     str += text1 + text2 + text3;
+    //     // console.log(str);
+    //     return str;
+    // }
+
+    // var p = concatData();
+    // console.log(p);
+    // p.then(res => {
+    //     console.log(res);
+    // })
+
+
+
+
+    function readTxt(url) {
+        var p = new Promise(function (resolve, reject) {
+            $.ajax({
+                type: "get",
+                url: url,
+                success(result) {
+                    // console.log(result);
+                    resolve(result);
+                }
+            })
+        });
+
+        return p;   //每次调用此方法 返回Promise的实例
+    }
+
+
+
+
+
+
+
+
+
+</script>
+
+</html>

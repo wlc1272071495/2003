@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="../js/ajax.js"></script>
+</head>
+
+<body>
+
+</body>
+<script>
+    // 了解  (生成器函数)
+
+    // function* fn() {
+    //     var a = 10;
+    //     yield a; //10
+    //     a++;
+    //     yield a;
+    //     a++;
+    //     yield a;
+    //     a++;
+    //     return a;
+    // }
+
+    // var p = fn();  // 调用函数得到一个指针 指向函数开始的位置 (此时函数并不会执行)
+    // console.log(p);
+
+    // var result = p.next();   //从函数开始的位置开始执行 遇到第一个yield停止  返回 yield的值  {value:xxx,done:false}
+    // console.log(result);
+
+    // var result = p.next();  // 从第一个yield 开始到  第二个 yield 停止  返回 yield的值  {value:xxx,done:false}
+    // console.log(result);
+
+    // var result = p.next();  // 从第二个yield 开始到  第三个 yield 停止  返回 yield的值  {value:xxx,done:false}
+    // console.log(result);
+
+    // var result = p.next(); // 从第三个yield 开始到  return 停止  返回 yield的值  {value:xxx,done:true}
+    // console.log(result);
+
+    function readTxt(url) {
+        var p = new Promise(function (resolve, reject) {
+            $.ajax({
+                type: "get",
+                url: url,
+                success(result) {
+                    // console.log(result);
+                    resolve(result);
+                }
+            })
+        });
+
+        return p;   //每次调用此方法 返回Promise的实例
+    }
+
+    function* fn() {
+        var p = readTxt("../data/1.txt");
+        yield p;
+        var p = readTxt("../data/2.txt");
+        yield p;
+        var p = readTxt("../data/3.txt");
+        yield p;
+    }
+
+    var p = fn();
+    console.log(p);
+
+    var result = p.next();
+    console.log(result);
+
+    var result = p.next();
+    console.log(result);
+
+    var result = p.next();
+    console.log(result);
+</script>
+
+</html>

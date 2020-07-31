@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="../js/common.js"></script>
+    <script src="../js/ajax.js"></script>
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+        }
+
+        .wrap {
+            width: 1200px;
+            margin: 0 auto;
+        }
+
+        .wrap table {
+            width: 100%;
+            table-layout: fixed;
+            border: 1px solid #333;
+            border-collapse: collapse;
+            line-height: 32px;
+            text-align: center;
+        }
+
+        .wrap table td,
+        .wrap table th {
+            border: 1px solid #333;
+            overflow: hidden;
+        }
+
+        .search_bar {
+            overflow: hidden;
+            margin-top: 50px;
+            margin-bottom: 10px;
+            float: left;
+        }
+
+        .search_bar .searchBox {
+            float: left;
+            border: 1px solid gray;
+        }
+
+        .search_bar .searchBox input {
+            height: 30px;
+            width: 300px;
+            float: left;
+            border: 0;
+            outline: none;
+            text-indent: 10px;
+        }
+
+        .search_bar .searchBox button {
+            height: 30px;
+            width: 60px;
+            float: left;
+            box-sizing: content-box;
+            border: 0;
+            outline: none;
+        }
+
+        .search_bar .searchBox {
+            overflow: hidden;
+        }
+
+        .search_bar .orderBox {
+            float: left;
+            line-height: 30px;
+        }
+
+        .search_bar .orderBox>*>label {
+            margin-right: 10px;
+        }
+
+        .search_bar .orderBox>* {
+            margin-left: 20px;
+            float: left;
+            border: 1px dashed #333;
+            padding: 0 20px;
+        }
+
+        .search_bar .orderBox .showNumBox {
+            border: 0;
+        }
+
+        .search_bar select {
+            vertical-align: middle;
+            height: 30px;
+            padding: 0 5px;
+        }
+
+        .pageChangeBox {
+            text-align: center;
+            margin-top: 20px;
+
+        }
+
+        .pageChangeBox button {
+            height: 32px;
+            width: 60px;
+        }
+
+        .pageChangeBox button:nth-child(2) {
+            margin-left: 50px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="box">
+        你好,<a href="./login.html">请登录</a>
+        <a href="./goodsList.html">商品列表</a>
+    </div>
+    <div class="wrap">
+        <div class="search_bar">
+            <div class="searchBox">
+                <input type="text" class="searchCon">
+                <button class="searchBtn">搜索</button>
+            </div>
+            <div class="orderBox">
+                <div class="orderColBox">
+                    <label>
+                        编号
+                        <input type="radio" checked name="orderCol" class="orderCol" value="u_id">
+                    </label>
+                    <label>
+                        用户名
+                        <input type="radio" name="orderCol" class="orderCol" value="user">
+                    </label>
+                    <label>
+                        手机号
+                        <input type="radio" name="orderCol" class="orderCol" value="phone">
+                    </label>
+                    <label>
+                        邮箱
+                        <input type="radio" name="orderCol" class="orderCol" value="email">
+                    </label>
+                </div>
+
+                <div class="orderTypeBox">
+                    <label>
+                        升序
+                        <input type="radio" checked name="orderType" class="orderType" value="asc">
+                    </label>
+                    <label>
+                        降序
+                        <input type="radio" name="orderType" class="orderType" value="desc">
+                    </label>
+                </div>
+
+                <div class="showNumBox">
+                    <select class="select">
+                        <option value="5">每页显示05条</option>
+                        <option value="10" selected>每页显示10条</option>
+                        <option value="15">每页显示15条</option>
+                        <option value="20">每页显示20条</option>
+                    </select>
+                </div>
+
+
+            </div>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>用户编号</th>
+                    <th>用户名</th>
+                    <th>密码</th>
+                    <th>手机号</th>
+                    <th>邮箱</th>
+                    <th>编辑</th>
+                    <th>删除</th>
+                </tr>
+            </thead>
+            <tbody>
+
+            </tbody>
+        </table>
+        <div class="pageChangeBox">
+            <button class="prev">上一页</button>
+            <button class="next">下一页</button>
+        </div>
+    </div>
+</body>
+
+<script>
+
+    if (getCookie("logUser")) {
+        box.textContent = `欢迎您,${getCookie("logUser")}`;
+    }
+    var tbody = document.querySelector(".wrap table tbody");
+
+    var searchCon = document.getElementsByClassName("searchCon")[0];
+    var searchBtn = document.getElementsByClassName("searchBtn")[0];
+    var orderColList = document.querySelectorAll(".orderCol");
+    var orderTypeList = document.querySelectorAll(".orderType");
+    var select = document.querySelector(".select");
+    var prev = document.querySelector(".prev");
+    var next = document.querySelector(".next");
+
+    // $.ajax({
+    //     url: "../php/userList.php",
+    //     dataType: "json",
+    //     success: function (userList) { // ajax请求成功之后返回的数据
+    //         var html = "";
+    //         userList.forEach(item => {
+    //             var { u_id, user, pwd, phone, email } = item;
+    //             html += `<tr>
+    //                 <td>${u_id}</td>
+    //                 <td>${user}</td>
+    //                 <td>${pwd}</td>
+    //                 <td>${phone}</td>
+    //                 <td title="${email}">${email}</td>
+    //                 <td><a class="edit" href="javascript:;">编辑</a></td>
+    //                 <td><a class="delete" href="javascript:;">删除</a></td>
+    //             </tr>`;
+    //         });
+
+    //         tbody.innerHTML = html;  // 动态生成
+
+
+    //     }
+    // })
+
+    // 默认值
+    var key = "";
+    var orderCol = "u_id";
+    var orderType = "asc";
+    var showNum = 5;
+    var currentPage = 0;
+
+    searchUserList();
+
+    searchBtn.onclick = function () {
+        key = searchCon.value;
+        searchUserList();
+    }
+
+
+    // 排序的列名( u_id,user,phone,email)
+    for (let i = 0; i < orderColList.length; i++) {
+        let orderColInp = orderColList[i];
+        orderColInp.onclick = function () {
+            orderCol = this.value;
+            searchUserList();
+        }
+    }
+
+    // 排序的方式( asc,desc);
+    for (let i = 0; i < orderTypeList.length; i++) {
+        let orderTypeInp = orderTypeList[i];
+        orderTypeInp.onclick = function () {
+            orderType = this.value;
+            searchUserList();
+        }
+    }
+
+    select.onchange = function () {
+        showNum = this.value;
+        searchUserList();
+    }
+
+
+
+
+
+    // 2. 利用事件委托绑定事件
+    var editList = document.getElementsByClassName("edit");
+    tbody.onclick = function (e) {
+        var e = e || window.event;
+        var target = e.target || e.srcElement;
+        if (target.className = "edit") {
+            console.log(editList);
+            var list = Array.from(editList);
+            console.log(list.indexOf(target));
+        }
+    }
+
+
+    function searchUserList() {
+        $.ajax({
+            type: "get",
+            url: "../php/searchUserList.php",
+            data: {
+                key,
+                orderCol,
+                orderType,
+                showNum,
+                currentPage,
+            },
+            dataType: "json",
+            success(data) {
+                console.log(data);
+
+                var pageCountMax = data.pageCountMax;
+
+                var list = data.list;
+                var html = "";
+                list.forEach(item => {
+                    var { u_id, user, pwd, phone, email } = item;
+                    html += `<tr>
+                    <td>${u_id}</td>
+                    <td>${user}</td>
+                    <td>${pwd}</td>
+                    <td>${phone}</td>
+                    <td title="${email}">${email}</td>
+                    <td><a class="edit" href="./edit.html?u_id=${u_id}">编辑</a></td>
+                    <td><a class="delete" href="javascript:;">删除</a></td>
+                </tr>`;
+                });
+
+                tbody.innerHTML = html;  // 动态生成
+
+
+                prev.onclick = function () {
+                    currentPage--;
+                    if (currentPage <= 0) {
+                        currentPage = 0;
+                    }
+                    searchUserList();
+                }
+                next.onclick = function () {
+                    currentPage++;
+                    if (currentPage > pageCountMax) {
+                        currentPage = pageCountMax;
+                        console.log("已经是最后一页");
+                    }
+                    searchUserList();
+                }
+            }
+        })
+    }
+
+</script>
+
+</html>

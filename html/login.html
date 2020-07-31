@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="../js/common.js"></script>
+    <style>
+        label {
+            display: inline-block;
+            width: 80px;
+            text-align: right;
+        }
+
+        form {
+            position: absolute;
+            right: 200px;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: #f1f1f1;
+            padding: 50px;
+            border-radius: 10px;
+        }
+
+        form>div>input[type=text] {
+            width: 250px;
+            height: 25px;
+            border: 1px solid gray;
+            border-radius: 3px;
+            text-indent: 3px;
+        }
+
+        div span {
+            display: block;
+            margin-left: 80px;
+            font-size: 12px;
+            height: 18px;
+            padding-left: 5px;
+            white-space: nowrap;
+        }
+
+        div .randCode {
+            display: inline-block;
+            margin-left: 0;
+        }
+
+        form>div:nth-last-child(1) {
+            text-align: center;
+        }
+
+        form>div:nth-last-child(1)>button {
+            margin-right: 30px;
+        }
+
+
+        .right {
+            color: green;
+        }
+
+        .err {
+            color: red;
+        }
+    </style>
+</head>
+
+<body>
+    <h2>注册</h2>
+    <form action="" onsubmit="return false">
+        <div>
+            <label for="user">用户名</label>
+            <input id="user" type="text">
+            <span class="user_span"></span>
+        </div>
+        <div>
+            <label for="pwd">密码:</label>
+            <input id="pwd" type="text">
+            <span class="pwd_span"></span>
+        </div>
+
+        <div>
+            <label for="remPwd">记住密码:</label>
+            <input id="remPwd" type="checkbox">
+
+        </div>
+
+        <div>
+            <button id="logBtn">登录</button>
+            <input type="reset">
+        </div>
+    </form>
+</body>
+<script>
+    // 用户名  由数字,大小写字母,下划线,$ 组成  6-12位 且不能以数字开头
+    // 密码    由数字,大小写字母,下划线 组成  6-12位 判断强中弱
+    // 确认密码 
+    // 手机号  1开头 11位
+    // 邮箱    1272071492@qq.com
+
+
+    var form = document.getElementsByTagName("form")[0];
+    var pwdInp = document.getElementById("pwd");
+    var randCode = document.getElementsByClassName("randCode")[0];
+    var logBtn = document.getElementById("logBtn");
+
+    var userInp = document.getElementById("user");
+    var userSpan = document.getElementById("user_span");
+    var pwdInp = document.getElementById("pwd");
+    var pwdSpan = document.getElementById("pwd_span");
+    var remPwd = document.getElementById("remPwd");
+
+
+
+    var isUserRight = false;
+    var isPwdRight = false;
+
+    logBtn.onclick = function () {
+        // 登录时获取的用户名 / 密码
+        var user = userInp.value;  // 账号
+        var pwd = pwdInp.value;
+
+        var xhr = new XMLHttpRequest();
+
+        xhr.open("post", "../php/login.php", true);
+
+        xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+
+        xhr.send("account=" + user + "&pwd=" + pwd);
+
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState == 4 && xhr.status == 200) {
+                console.log(xhr.responseText);
+                var data = JSON.parse(xhr.responseText);
+                if (data.status) {
+                    if (remPwd.checked) {
+                        setCookie("logUser", data.user, 7);
+                    } else {
+                        setCookie("logUser", data.user);
+                    }
+                    var search = location.search
+                    if (search) {
+                        if (/ReturnUrl=.+/i.test(search)) {
+                            var url = decodeURIComponent(search.split("=")[1]);
+                            location.href = url;
+                        } else {
+                            location.href = "./index1.html";
+                        }
+                    } else {
+                        location.href = "./index1.html";
+                    }
+
+                } else {
+                    alert(data.msg);
+                }
+            }
+
+        }
+
+        // if (remPwd.checked) {
+        //     setCookie("logUser", user, 7);
+        // } else {
+        //     setCookie("logUser", user);
+        // }
+
+    }
+
+
+
+
+    function prev(ele) {
+        return ele.previousElementSibling || ele.previousSibling;
+    }
+
+
+    function next(ele) {
+        return ele.nextElementSibling || ele.nextSibling;
+    }
+
+    function getCode() {
+        var str = "1234567890qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM";
+        var newStr = "";
+        for (var i = 0; i < 4; i++) {
+            var index = Math.floor(Math.random() * str.length);
+            newStr += str.charAt(index);
+        }
+        return newStr;
+    }
+
+
+
+
+
+</script>
+
+</html>
